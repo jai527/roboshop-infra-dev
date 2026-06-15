@@ -18,3 +18,8 @@ data "aws_ssm_parameter" "mongodb_sg_ids" {
     name = "/${var.project}/${var.environment}/mongodb_sg_ids"
   
 }
+
+data "aws_ssm_parameter" "redis_sg_ids" {
+    name = "/${var.project}/${var.environment}/redis_sg_ids"
+  
+}
