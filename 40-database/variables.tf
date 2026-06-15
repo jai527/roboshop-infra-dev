@@ -16,11 +16,6 @@ variable "instance_type" {
   
 }
 
-variable "name" {
-    default = mongodb
-  
-}
-
 variable "zone_id" {
     default = "Z005336437MHJ16KCQQI8"
   
