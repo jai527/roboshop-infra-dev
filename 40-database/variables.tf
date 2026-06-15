@@ -22,6 +22,6 @@ variable "zone_id" {
 }
 
 variable "domain_name" {
-    default = jai01.online
+    default = "jai01.online"
   
 }
