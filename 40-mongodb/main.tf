@@ -16,26 +16,27 @@ resource "aws_instance" "mongodb" {
 
 resource "terraform_data" "bootstrap" {
   triggers_replace = [
-    aws_instance.mongodb.id 
+    aws_instance.mongodb.id
   ]
 
   connection {
-    type = "ssh"
-    user = "ec2-user"
+    type     = "ssh"
+    user     = "ec2-user"
     password = "DevOps321"
-    host = aws_instance.mongodb.private_ip
+    host     = aws_instance.mongodb.private_ip
   }
 
-  provisioner "file" { 
-    source = "bootstrap.sh" 
+  # ✅ Step 1: Copy file
+  provisioner "file" {
+    source      = "bootstrap.sh"
     destination = "/tmp/bootstrap.sh"
-    
   }
 
-    provisioner "remote-exec" {
-    inline = [ 
-        "chmod +x bootstrap.sh",
-        "sudo sh bootstrap.sh"
-     ]
+  # ✅ Step 2: Execute file
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/bootstrap.sh",
+      "sudo sh /tmp/bootstrap.sh"
+    ]
   }
 }
