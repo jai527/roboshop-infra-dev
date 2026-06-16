@@ -24,3 +24,28 @@ resource "aws_iam_role" "mysql" {
     local.common_tags
   )
 }
+
+resource "aws_iam_policy" "mysql" {
+    name = "S3ReadonlyAcsessPolicy"
+    description = "A policy for mysql Ec2 instance"
+    policy = file("mysql-iam-policy.json")
+  
+}
+
+
+resource "aws_iam_role_policy_attachment" "bastion" {
+  role       = aws_iam_role.bastion_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
+resource "aws_iam_instance_profile" "bastion" {
+  name = "${var.project}-${var.environment}-bastion"
+  role = aws_iam_role.bastion_role.name
+
+  tags = merge(
+    {
+        Name = "${var.project}-${var.environment}-bastion"
+    },
+    local.common_tags
+  )
+}
