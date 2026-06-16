@@ -11,4 +11,5 @@ locals {
   mongodb_sg_id = data.aws_ssm_parameter.mongodb_sg_ids.value
   redis_sg_id = data.aws_ssm_parameter.redis_sg_ids.value
   mysql_sg_id = data.aws_ssm_parameter.mysql_sg_ids.value
+  mysql_role_name = "${title(var.project)}-${title(var.environment)}-Mysql"
 }
