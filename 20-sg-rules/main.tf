@@ -49,7 +49,7 @@ resource "aws_security_group_rule" "redis_bastion" {
 }
 
 # MongoDB access from Bastion (SSH)
-resource "aws_security_group_rule" "redis_bastion" {
+resource "aws_security_group_rule" "mysql_bastion" {
   type                     = "ingress"
   from_port                = 22
   to_port                  = 22
