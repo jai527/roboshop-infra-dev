@@ -57,3 +57,14 @@ resource "aws_security_group_rule" "mysql_bastion" {
   source_security_group_id = local.bastion_sg_id
   security_group_id        = local.mysql_sg_id
 }
+
+# MongoDB access from Bastion (SSH)
+resource "aws_security_group_rule" "rabbitmq_bastion" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = local.bastion_sg_id
+  security_group_id        = local.rabbitmq_sg_id
+}
+

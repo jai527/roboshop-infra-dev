@@ -24,3 +24,12 @@ resource "aws_route53_record" "mysql_r53" {
   records = [aws_instance.mysql.private_ip]
   allow_overwrite = true
 }
+
+resource "aws_route53_record" "rabbitmq_r53" {
+  zone_id = var.zone_id
+  name    = "rabbitmq-${var.environment}"
+  type    = "A"
+  ttl     = 1
+  records = [aws_instance.rabbitmq.private_ip]
+  allow_overwrite = true
+}
