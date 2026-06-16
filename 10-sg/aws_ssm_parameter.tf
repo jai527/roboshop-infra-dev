@@ -12,3 +12,19 @@ resource "aws_ssm_parameter" "sg_ids" {
     value = module.sg[count.index].sg_id
   
 }
+
+
+
+# separtly i created this ssm_parameter_store for mysql password store 
+
+resource "aws_ssm_parameter" "mysql_root_password" {
+  name  = "/Roboshop/Dev/Mysql_root_password"
+  type  = "SecureString"          # ✅ encrypted
+  value = "RoboShop@1"            # ⚠️ your password
+
+  tags = {
+    Project     = "roboshop"
+    Environment = "dev"
+    Component   = "mysql"
+  }
+}
