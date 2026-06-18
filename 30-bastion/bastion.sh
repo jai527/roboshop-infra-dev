@@ -4,7 +4,7 @@
 sudo growpart /dev/nvme0n1 4
 
 # Extend logical volume for /home
-sudo lvextend -r -L +30G /dev/mapper/rootvg-homevol
+sudo lvextend -r -L +30G /dev/mapper/RootVG-homevol
 xfs_growfs /home
 echo "✅ /home disk extended successfully"
 
