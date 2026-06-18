@@ -1,5 +1,5 @@
 resource "aws_instance" "catalogue" {
-    ami = data.aws_ami.joindevops.id
+    ami = local.ami_id
     instance_type = var.instance_type
     subnet_id = local.private_subnet_id
     vpc_security_group_ids = [local.catalogue_sg_id]
