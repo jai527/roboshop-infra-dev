@@ -1,0 +1,10 @@
+locals {
+    common_tags ={
+    project = var.project
+    environment = var.environment
+    terraform = true
+  }
+    
+  backend_alb_sg_id = data.aws_ssm_parameter.backend_alb_sg_ids.value
+  private_subnet_id = split(",", data.aws_ssm_parameter.private_subnet_ids.value)
+}
