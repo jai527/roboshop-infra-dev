@@ -41,7 +41,7 @@ resource "terraform_data" "catalogue" {
   }
 }
 
-/* resource "aws_instance_state" "catalogue" {
+ resource "aws_instance_state" "catalogue" {
   instance_id = aws_instance.catalogue.id
   state = "stoped"
   depends_on = [ terraform_data.catalogue ]
@@ -60,4 +60,4 @@ resource "aws_ami_from_instance" "catalogue_ami" {
     },
     local.common_tags
   )
-} */
+}
