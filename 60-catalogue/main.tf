@@ -202,10 +202,10 @@ resource "terraform_data" "catalogue_delete" {
     aws_instance.catalogue.id
   ]
   depends_on = [ aws_lb_listener_rule.catalogue ]
-  
+
  #its exicute in bastion 
   provisioner "local-exec" {
-    command = "aws ec2 terminate-instance --instance id ${aws_instance.catalogue.id}"
+    command = "aws ec2 terminate-instance instance id ${aws_instance.catalogue.id}"
     
   }
   
