@@ -53,6 +53,7 @@ resource "aws_ami_from_instance" "catalogue_ami" {
   source_instance_id = aws_instance.catalogue.id
 
   depends_on = [aws_ec2_instance_state.catalogue]
+  
 
   tags = merge(
     {
@@ -72,7 +73,7 @@ resource "aws_lb_target_group" "catalogue" {
   health_check {
     healthy_threshold = 2
     interval = 10
-    matcher = 200-299
+    matcher = "200-299"
     path = "/health"
     port = 8080
     protocol = "HTTP"
@@ -92,7 +93,7 @@ resource "aws_launch_template" "catalogue" {
 
   instance_type = var.instance_type
   vpc_security_group_ids = [local.catalogue_sg_id]
-    
+
   # each time we apply terraform this version will be updated as default
   update_default_version = true
 
@@ -126,3 +127,44 @@ tag_specifications {
         local.common_tags
       )
 }
+
+resource "aws_autoscaling_group" "catalogue" {
+  name                      = "${var.project}-${var.environment}-catalogue"
+  max_size                  = 10
+  min_size                  = 2
+  health_check_grace_period = 120
+  health_check_type         = "ELB"
+  desired_capacity          = 1
+  force_delete              = false
+
+  launch_template {
+    id = aws_launch_template.catalogue.id
+    version = "$latest"
+  }
+
+  vpc_zone_identifier       = [local.private_subnet_id]
+  target_group_arns = [aws_lb_target_group.catalogue.arn]
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+    }
+  }
+
+  tag {
+    key                 = "name"
+    value               = "${var.project}-${var.environment}-catalogue"
+    propagate_at_launch = true
+  }
+
+  timeouts {
+    delete = "15m"
+  }
+
+  tag {
+    key                 = "name"
+    value               = "${var.project}-${var.environment}-catalogue"
+    propagate_at_launch = true
+  }
+} 
