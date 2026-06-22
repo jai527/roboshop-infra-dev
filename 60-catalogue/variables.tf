@@ -27,6 +27,6 @@ variable "domain_name" {
 }
 
 variable "version" {
-    default = v3
+    default = "v3"
   
 }
