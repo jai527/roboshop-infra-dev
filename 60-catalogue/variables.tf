@@ -26,7 +26,7 @@ variable "domain_name" {
 
 }
 
-variable "varsion" {
+variable "version" {
     default = v3
   
 }
