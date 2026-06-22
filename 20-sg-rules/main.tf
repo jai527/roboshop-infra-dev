@@ -1,4 +1,8 @@
-# Bastion access from internet
+# =====================================================
+# Bastion Access
+# =====================================================
+
+# Allow Internet to SSH into Bastion
 resource "aws_security_group_rule" "bastion_internet" {
   type              = "ingress"
   from_port         = 22
@@ -8,7 +12,11 @@ resource "aws_security_group_rule" "bastion_internet" {
   security_group_id = local.bastion_sg_id
 }
 
-# MongoDB access from Bastion (SSH)
+# =====================================================
+# MongoDB Access Rules
+# =====================================================
+
+# Allow Bastion to SSH into MongoDB
 resource "aws_security_group_rule" "mongodb_bastion" {
   type                     = "ingress"
   from_port                = 22
@@ -18,7 +26,7 @@ resource "aws_security_group_rule" "mongodb_bastion" {
   security_group_id        = local.mongodb_sg_id
 }
 
-# MongoDB access from Catalogue
+# Allow Catalogue service to access MongoDB
 resource "aws_security_group_rule" "mongodb_catalogue" {
   type                     = "ingress"
   from_port                = 27017
@@ -28,17 +36,21 @@ resource "aws_security_group_rule" "mongodb_catalogue" {
   security_group_id        = local.mongodb_sg_id
 }
 
-# MongoDB access from User service
+# Allow User service to access MongoDB
 resource "aws_security_group_rule" "mongodb_user" {
   type                     = "ingress"
   from_port                = 27017
   to_port                  = 27017
   protocol                 = "tcp"
-  source_security_group_id = local.user_sg_id   # ✅ fixed
+  source_security_group_id = local.user_sg_id
   security_group_id        = local.mongodb_sg_id
 }
 
-# MongoDB access from Bastion (SSH)
+# =====================================================
+# Redis Access Rules
+# =====================================================
+
+# Allow Bastion to SSH into Redis
 resource "aws_security_group_rule" "redis_bastion" {
   type                     = "ingress"
   from_port                = 22
@@ -48,7 +60,31 @@ resource "aws_security_group_rule" "redis_bastion" {
   security_group_id        = local.redis_sg_id
 }
 
-# MongoDB access from Bastion (SSH)
+# Allow User service to access Redis (6379)
+resource "aws_security_group_rule" "redis_user" {
+  type                     = "ingress"
+  from_port                = 6379
+  to_port                  = 6379
+  protocol                 = "tcp"
+  source_security_group_id = local.user_sg_id
+  security_group_id        = local.redis_sg_id
+}
+
+# Allow Cart service to access Redis (check port ⚠️ should be 6379, not 22)
+resource "aws_security_group_rule" "redis_cart" {
+  type                     = "ingress"
+  from_port                = 6379   # ✅ FIX recommended
+  to_port                  = 6379
+  protocol                 = "tcp"
+  source_security_group_id = local.cart_sg_id
+  security_group_id        = local.redis_sg_id
+}
+
+# =====================================================
+# MySQL Access Rules
+# =====================================================
+
+# Allow Bastion to SSH into MySQL
 resource "aws_security_group_rule" "mysql_bastion" {
   type                     = "ingress"
   from_port                = 22
@@ -58,7 +94,21 @@ resource "aws_security_group_rule" "mysql_bastion" {
   security_group_id        = local.mysql_sg_id
 }
 
-# MongoDB access from Bastion (SSH)
+# Allow Shipping service to access MySQL
+resource "aws_security_group_rule" "mysql_shipping" {
+  type                     = "ingress"
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
+  source_security_group_id = local.shipping_sg_id
+  security_group_id        = local.mysql_sg_id
+}
+
+# =====================================================
+# RabbitMQ Access Rules
+# =====================================================
+
+# Allow Bastion to SSH into RabbitMQ
 resource "aws_security_group_rule" "rabbitmq_bastion" {
   type                     = "ingress"
   from_port                = 22
@@ -68,17 +118,21 @@ resource "aws_security_group_rule" "rabbitmq_bastion" {
   security_group_id        = local.rabbitmq_sg_id
 }
 
-# MongoDB access from Bastion (SSH)
-resource "aws_security_group_rule" "backend_alb_bastion" {
+# Allow Payment service to access RabbitMQ
+resource "aws_security_group_rule" "rabbitmq_payment" {
   type                     = "ingress"
-  from_port                = 80
-  to_port                  = 80
+  from_port                = 5672
+  to_port                  = 5672
   protocol                 = "tcp"
-  source_security_group_id = local.bastion_sg_id
-  security_group_id        = local.backend_alb_sg_id
+  source_security_group_id = local.payment_sg_id
+  security_group_id        = local.rabbitmq_sg_id
 }
 
-# MongoDB access from Bastion (SSH)
+# =====================================================
+# Application Services Access (Catalogue, User, Cart, etc.)
+# =====================================================
+
+# Allow Bastion to SSH into Catalogue
 resource "aws_security_group_rule" "catalogue_bastion" {
   type                     = "ingress"
   from_port                = 22
@@ -88,7 +142,7 @@ resource "aws_security_group_rule" "catalogue_bastion" {
   security_group_id        = local.catalogue_sg_id
 }
 
-# MongoDB access from Bastion (SSH)
+# Allow Backend ALB to access Catalogue (8080)
 resource "aws_security_group_rule" "catalogue_backend_alb" {
   type                     = "ingress"
   from_port                = 8080
@@ -98,13 +152,138 @@ resource "aws_security_group_rule" "catalogue_backend_alb" {
   security_group_id        = local.catalogue_sg_id
 }
 
-# MongoDB access from Bastion (SSH)
-resource "aws_security_group_rule" "frontend_alb_public" {
+# ---------------- USER ----------------
+
+# Allow Bastion to SSH into User service
+resource "aws_security_group_rule" "user_bastion" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = local.bastion_sg_id
+  security_group_id        = local.user_sg_id
+}
+
+# Allow Backend ALB to access User service
+resource "aws_security_group_rule" "user_backend_alb" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = local.backend_alb_sg_id
+  security_group_id        = local.user_sg_id
+}
+
+# ---------------- CART ----------------
+
+# Allow Bastion to SSH into Cart
+resource "aws_security_group_rule" "cart_bastion" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = local.bastion_sg_id
+  security_group_id        = local.cart_sg_id
+}
+
+# Allow Backend ALB to access Cart
+resource "aws_security_group_rule" "cart_backend_alb" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = local.backend_alb_sg_id
+  security_group_id        = local.cart_sg_id
+}
+
+# ---------------- SHIPPING ----------------
+
+# Allow Bastion to SSH into Shipping
+resource "aws_security_group_rule" "shipping_bastion" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = local.bastion_sg_id
+  security_group_id        = local.shipping_sg_id
+}
+
+# Allow Backend ALB to access Shipping
+resource "aws_security_group_rule" "shipping_backend_alb" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = local.backend_alb_sg_id
+  security_group_id        = local.shipping_sg_id
+}
+
+# ---------------- PAYMENT ----------------
+
+# Allow Bastion to SSH into Payment
+resource "aws_security_group_rule" "payment_bastion" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = local.bastion_sg_id
+  security_group_id        = local.payment_sg_id
+}
+
+# Allow Backend ALB to access Payment
+resource "aws_security_group_rule" "payment_backend_alb" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = local.backend_alb_sg_id
+  security_group_id        = local.payment_sg_id
+}
+
+# =====================================================
+# Backend ALB Access
+# =====================================================
+
+# Allow Bastion to access Backend ALB
+resource "aws_security_group_rule" "backend_alb_bastion" {
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  source_security_group_id = local.bastion_sg_id
+  security_group_id        = local.backend_alb_sg_id
+}
+
+# Allow all services to communicate with Backend ALB (HTTP)
+resource "aws_security_group_rule" "backend_alb_services" {
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  source_security_group_id = local.frontend_sg_id
+  security_group_id        = local.backend_alb_sg_id
+}
+
+# =====================================================
+# Frontend Access
+# =====================================================
+
+# Allow Frontend ALB to talk to Frontend service
+resource "aws_security_group_rule" "frontend_frontend_alb" {
   type                     = "ingress"
   from_port                = 443
   to_port                  = 443
   protocol                 = "tcp"
-  cidr_blocks              = ["0.0.0.0/0"]
-  security_group_id        = local.frontend_alb_sg_id
+  source_security_group_id = local.frontend_alb_sg_id
+  security_group_id        = local.frontend_sg_id
 }
 
+# Allow public internet access to Frontend ALB (HTTPS)
+resource "aws_security_group_rule" "frontend_alb_public" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = local.frontend_alb_sg_id
+}
