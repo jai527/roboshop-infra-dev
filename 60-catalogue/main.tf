@@ -36,7 +36,7 @@ resource "terraform_data" "catalogue" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/bootstrap.sh",
-      "sudo sh /tmp/bootstrap.sh catalogue ${var.environment} ${var.version}"
+      "sudo sh /tmp/bootstrap.sh catalogue ${var.environment} ${var.app_version}"
     ]
   }
 }
@@ -50,7 +50,7 @@ resource "terraform_data" "catalogue" {
 
 resource "aws_ami_from_instance" "catalogue_ami" {
   # roboshop-dev-catalogue-v3-instandid will create name
-  name  = "${var.project}-${var.environment}-catalogue-${var.version}-${aws_instance.catalogue.id}"
+  name  = "${var.project}-${var.environment}-catalogue-${var.app_version}-${aws_instance.catalogue.id}"
   source_instance_id = aws_instance.catalogue.id
 
   depends_on = [aws_ec2_instance_state.catalogue]
