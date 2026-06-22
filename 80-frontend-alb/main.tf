@@ -1,10 +1,10 @@
 resource "aws_lb" "frontend_alb" {
   name               = "${var.project}-${var.environment}-frontend"
-  internal           = true
+  internal           = false
   load_balancer_type = "application"
   security_groups    = [local.frontend_alb_sg_id]
   subnets            = local.public_subnet_ids
-
+  
   #kepping it is a false, just to delete using terraform practice
 
   enable_deletion_protection = false
@@ -42,7 +42,7 @@ resource "aws_lb_listener" "https" {
 }
 
 
-resource "aws_route53_record" "catalogue_alb" {
+resource "aws_route53_record" "www" {
   zone_id = var.zone_id
   name    = "*.frontend-alb-${var.environment}.${var.domain_name}"
   type    = "A"
