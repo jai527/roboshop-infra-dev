@@ -1,5 +1,5 @@
-data "aws_ssm_parameter" "frontend_alb_sg_ids" {
-   name = "/${var.project}/${var.environment}/frontend_alb_sg_ids"
+data "aws_ssm_parameter" "frontend_alb_sg_id" {
+   name = "/${var.project}/${var.environment}/frontend_alb_sg_id"
   
 }
 
