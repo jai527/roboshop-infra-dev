@@ -5,16 +5,16 @@ terraform {
       version = "6.47.0"
     }
   }
-    backend "s3" {
-    bucket         = "remote-state-aws-vpc-dev"
-    key            = "roboshop-dev-component"
-    region         = "us-east-1"
-    encrypt        = true
+  backend "s3" {
+    bucket       = "remote-state-aws-vpc-dev"
+    key          = "roboshop-dev-component"
+    region       = "us-east-1"
+    encrypt      = true
     use_lockfile = true
-    
+
 
   }
-}   
+}
 
 provider "aws" {
   region = "us-east-1"
